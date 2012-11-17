@@ -1,5 +1,6 @@
 <?php
 $memcache = new Memcache();
+
 $memcache->addServer('127.0.0.1'); // edit here if your memcached server differs from localhost
 
 $list = array();
@@ -24,10 +25,20 @@ ksort($list);
 
 if (isset($_GET['del'])) {
     $memcache->delete($_GET['del']);
+
+    header("Location: " . $_SERVER['PHP_SELF']);
 }
 
 if (isset($_GET['flush'])) {
     $memcache->flush();
+
+    header("Location: " . $_SERVER['PHP_SELF']);
+}
+
+if (isset($_GET['set'])) {
+    $memcache->set($_GET['set'], $_GET['value']);
+
+    header("Location: " . $_SERVER['PHP_SELF']);
 }
 ?>
 <head>
@@ -58,12 +69,21 @@ if (isset($_GET['flush'])) {
         </tbody>
     </table>
     <center>
-        <a href="memcached.php?flush=1">FLUSH</a>
+        <a href="memcached.php?flush=1">FLUSH</a> <br />
+        <br />
+        <a href="#" onclick="memcachedSet()">SET</a>
     </center>
 
     <script type="text/javascript">
         $(document).ready(function(){
             $("table").tablesorter();
         });
+
+        function memcachedSet() {
+            key = prompt("Key: ");
+            value = prompt("Value: ");
+
+            window.location.href = "memcached.php?set="+ key +"&value=" + value;
+        }
     </script>
 </body>
